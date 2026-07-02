@@ -1,0 +1,12 @@
+# Render Blueprint
+# https://render.com でこのリポジトリを "Blueprint" としてデプロイすると
+# 自動的に無料プランの Web Service が作成される。
+services:
+  - type: web
+    name: tab-chat-server
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /

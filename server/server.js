@@ -22,6 +22,10 @@ const PORT = process.env.PORT || 3000;
 // ルームごとに直近何件の履歴をメモリに保持するか
 const HISTORY_LIMIT = 50;
 
+// スパム対策: 1ソケットあたり RATE_WINDOW_MS の間に送れる最大メッセージ数
+const RATE_LIMIT = 5;
+const RATE_WINDOW_MS = 5000;
+
 const app = express();
 app.use(cors());
 
@@ -76,6 +80,9 @@ io.on("connection", (socket) => {
   // このソケットが現在参加しているルームと表示名を state に保持する
   let currentRoomId = null;
   let displayName = null;
+
+  // スパム対策用: 直近ウィンドウ内の送信タイムスタンプ
+  let sentTimestamps = [];
 
   /**
    * ルーム参加。
@@ -134,6 +141,21 @@ io.on("connection", (socket) => {
 
     const trimmed = text.trim();
     if (trimmed.length === 0) return;
+
+    // レート制限: 直近 RATE_WINDOW_MS 以内の送信が RATE_LIMIT 件を超えたら無視
+    const now = Date.now();
+    sentTimestamps = sentTimestamps.filter((t) => now - t < RATE_WINDOW_MS);
+    if (sentTimestamps.length >= RATE_LIMIT) {
+      socket.emit("chat:message", {
+        id: `rate-${now}`,
+        type: "system",
+        name: null,
+        text: "送信が速すぎます。少し待ってから送信してください。",
+        ts: now,
+      });
+      return;
+    }
+    sentTimestamps.push(now);
 
     // 過剰に長いメッセージは切り詰める
     const safeText = trimmed.slice(0, 1000);

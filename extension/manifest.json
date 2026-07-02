@@ -17,7 +17,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["lib/socket.io.min.js", "roomId.js", "content.js"],
+      "js": ["lib/socket.io.min.js", "config.js", "roomId.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
