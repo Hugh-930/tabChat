@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://cdn.socket.io/4.7.5/socket.io.min.js\" -o \"C:\\\\Users\\\\hughh\\\\Desktop\\\\Python\\\\tab-chat\\\\extension\\\\lib\\\\socket.io.min.js\")",
+      "Bash(npm install *)",
+      "Bash(node -e \"require\\('./server.js'\\)\")",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(kill %1)"
+    ]
+  }
+}
